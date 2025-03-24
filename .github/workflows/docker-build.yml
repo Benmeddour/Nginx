@@ -34,18 +34,21 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }} # Add your Docker Hub username here
           password: ${{ secrets.DOCKER_PASSWORD }} # Add your Docker Hub password or PAT here
 
-      # Step 5: Remove existing Docker image with the same tag if it exists
-      - name: Remove existing Docker image
+      # Step 5: Remove existing Docker image with the same tag from Docker Hub
+      - name: Remove existing Docker image from Docker Hub
         run: |
-            #Get the image digest
-            IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' nafaebm/testdocker:learn-nginx-app)
-    
+            # Get the image digest from Docker Hub
+            IMAGE_DIGEST=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
+              "https://hub.docker.com/v2/repositories/nafaebm/testdocker/images/" | jq -r '.results[0].digest')
+            
             # Check if the image digest is not empty
             if [ -n "$IMAGE_DIGEST" ]; then
               echo "Image found with digest $IMAGE_DIGEST, removing..."
-              docker rmi "$IMAGE_DIGEST"
+              # Delete the image using Docker Hub's API
+              curl -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
+              "https://hub.docker.com/v2/repositories/nafaebm/testdocker/manifests/$IMAGE_DIGEST"
             else
-              echo "Image not found, skipping removal."
+              echo "Image not found on Docker Hub, skipping removal."
             fi
 
 
