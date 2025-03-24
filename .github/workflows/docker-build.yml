@@ -37,8 +37,13 @@ jobs:
       # Step 5: Remove existing Docker image with the same tag if it exists
       - name: Remove existing Docker image
         run: |
-          docker images -q nafaebm/testdocker:learn-nginx-app && docker rmi nafaebm/testdocker:learn-nginx-app || echo "Image not found, skipping removal."
-
+          IMAGE_ID=$(docker images -q nafaebm/testdocker:learn-nginx-app)
+          if [ -n "$IMAGE_ID" ]; then
+            echo "Image found, removing..."
+            docker rmi nafaebm/testdocker:learn-nginx-app
+          else
+            echo "Image not found, skipping removal."
+          fi
 
       # Step 6: Build Docker image
       - name: Build Docker image
