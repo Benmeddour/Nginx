@@ -37,13 +37,17 @@ jobs:
       # Step 5: Remove existing Docker image with the same tag if it exists
       - name: Remove existing Docker image
         run: |
-          IMAGE_ID=$(docker images -q nafaebm/testdocker:learn-nginx-app)
-          if [ -n "$IMAGE_ID" ]; then
-            echo "Image found, removing..."
-            docker rmi nafaebm/testdocker:learn-nginx-app
-          else
-            echo "Image not found, skipping removal."
-          fi
+            #Get the image digest
+            IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' nafaebm/testdocker:learn-nginx-app)
+    
+            # Check if the image digest is not empty
+            if [ -n "$IMAGE_DIGEST" ]; then
+              echo "Image found with digest $IMAGE_DIGEST, removing..."
+              docker rmi "$IMAGE_DIGEST"
+            else
+              echo "Image not found, skipping removal."
+            fi
+
 
       # Step 6: Build Docker image
       - name: Build Docker image
