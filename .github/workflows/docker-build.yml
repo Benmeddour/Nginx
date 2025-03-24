@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master  # This will trigger the workflow on changes to the 'main' branch.
+      - master # This will trigger the workflow on changes to the 'main' branch.
 
 jobs:
   build:
@@ -30,17 +30,16 @@ jobs:
       # Step 4: Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t nafaebm/testdocker:learn_nginx_app
+          docker build -t nafaebm/testdocker:learn-nginx-app
 
       # Step 5: Log in to Docker Hub using GitHub OAuth authentication
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Add your Docker Hub username here
-          password: ${{ secrets.DOCKER_PASSWORD }}  # Add your Docker Hub password or PAT here
+          username: ${{ secrets.DOCKER_USERNAME }} # Add your Docker Hub username here
+          password: ${{ secrets.DOCKER_PASSWORD }} # Add your Docker Hub password or PAT here
 
       # Step 6: Push the Docker image to Docker Hub
       - name: Push Docker image
         run: |
-          docker push nafaebm/testdocker:learn_nginx_app
-
+          docker push nafaebm/testdocker:learn-nginx-app
