@@ -3,7 +3,7 @@
 This project is a Node.js application configured to work with Nginx as a reverse proxy.
 
 ## Prerequisites
-
+ff
 - Node.js (v14 or higher)
 - Nginx
 
