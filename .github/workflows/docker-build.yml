@@ -38,26 +38,24 @@ jobs:
       - name: Remove existing Docker image from Docker Hub
         run: |
           # Get the image digest from Docker Hub
-          IMAGE_DIGEST=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
-          "https://hub.docker.com/v2/repositories/nafaebm/testdocker/tags/learn-nginx-app" | jq -r '.images[0].digest')
+          IMAGE_DIGEST=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \"https://hub.docker.com/v2/repositories/nafaebm/testdocker/tags/learn-nginx-app" | jq -r '.images[0].digest')
     
           # Check if the image digest is not empty
           if [ -n "$IMAGE_DIGEST" ]; then
             echo "Image found with digest $IMAGE_DIGEST, removing..."
             # Delete the image using Docker Hub's API
-            curl -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
-            "https://hub.docker.com/v2/repositories/nafaebm/testdocker/manifests/$IMAGE_DIGEST"
+            curl -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \"https://hub.docker.com/v2/repositories/nafaebm/testdocker/manifests/$IMAGE_DIGEST"
           else
             echo "Image not found on Docker Hub, skipping removal."
           fi
 
 
       # Step 6: Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t nafaebm/testdocker:learn-nginx-app .
+      #- name: Build Docker image
+       # run: |
+        #  docker build -t nafaebm/testdocker:learn-nginx-app .
 
       # Step 7: Push the Docker image to Docker Hub
-      - name: Push Docker image
-        run: |
-          docker push nafaebm/testdocker:learn-nginx-app
+      #- name: Push Docker image
+       # run: |
+        #  docker push nafaebm/testdocker:learn-nginx-app
