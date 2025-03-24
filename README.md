@@ -1,64 +1,64 @@
-# Authentication with JWT Token
+# Nginx Project
 
-This repository contains a Node.js project that demonstrates how to implement authentication using JSON Web Tokens (JWT).
+This project is a Node.js application configured to work with Nginx as a reverse proxy.
 
-## Features
+## Prerequisites
 
-- User registration and login
-- Password hashing
-- JWT token generation and verification
-- Protected routes
+- Node.js (v14 or higher)
+- Nginx
 
 ## Installation
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your-username/authentication_JWT_Token.git
+    git clone https://github.com/yourusername/nginx-project.git
+    cd nginx-project
     ```
-2. Navigate to the project directory:
-    ```sh
-    cd authentication_JWT_Token
-    ```
-3. Install the dependencies:
+
+2. Install dependencies:
     ```sh
     npm install
     ```
 
-## Usage
+## Configuration
 
-1. Start the server:
-    ```sh
-    npm start
+1. Configure Nginx:
+    - Open the Nginx configuration file (e.g., `/etc/nginx/nginx.conf` or `/etc/nginx/sites-available/default`).
+    - Add the following configuration:
+    ```nginx
+    server {
+        listen 80;
+        server_name yourdomain.com;
+
+        location / {
+            proxy_pass http://localhost:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
     ```
-2. The server will be running on `http://localhost:3000`.
 
-## Endpoints
+2. Restart Nginx:
+    ```sh
+    sudo systemctl restart nginx
+    ```
+    ## Usage
 
-- `POST /register` - Register a new user
-- `POST /login` - Login and receive a JWT token
-- `GET /protected` - Access a protected route (requires a valid JWT token)
+    1. Start the Node.js application:
+        ```sh
+        node server.js
+        ```
 
-## Workflow
+    2. Open your browser and navigate to `http://localhost:3000` to ensure the application is running.
 
-This project uses GitHub Actions for continuous integration and deployment. The workflows are defined in the `.github/workflows` directory.
-
-### CI Workflow
-
-The CI workflow is triggered on every push and pull request to the `master` branch. It includes the following steps:
-
-1. **Setup Node.js** - Set up the Node.js environment.
-2. **Install Dependencies** - Install project dependencies using `npm install`.
-3. **Run Tests** - Run the test suite using `npm test`.
-
-### Docker Workflow
-
-The Docker workflow builds and pushes a Docker image to Docker Hub. It includes the following steps:
-
-1. **Checkout Code** - Checkout the repository code.
-2. **Set up Docker Buildx** - Set up Docker Buildx for multi-platform builds.
-3. **Log in to Docker Hub** - Log in to Docker Hub using secrets.
-4. **Build and Push Docker Image** - Build and push the Docker image to Docker Hub.
+    3. If everything is working correctly, you should see your application being served through Nginx at `http://yourdomain.com`.
 
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 
