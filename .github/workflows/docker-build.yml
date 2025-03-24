@@ -39,7 +39,7 @@ jobs:
         run: |
             # Get the image digest from Docker Hub
             IMAGE_DIGEST=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
-              "https://hub.docker.com/repositories/nafaebm/testdocker/images/" | jq -r '.results[0].digest')
+              "https://hub.docker.com/repositories/nafaebm/testdocker/images/" )
             
             # Check if the image digest is not empty
             if [ -n "$IMAGE_DIGEST" ]; then
