@@ -1,0 +1,26 @@
+{
+    "name": "nginx-lr",
+    "version": "1.0.0",
+    "description": "learn nginx",
+    "main": "server.js",
+    "scripts": {
+        "start": "nodemon server.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.18.2",
+        "path": "^0.12.7"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.22"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Benmeddour/Nginx.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Benmeddour/Nginx/issues"
+    },
+    "homepage": "https://github.com/Benmeddour/Nginx#readme"
+}
