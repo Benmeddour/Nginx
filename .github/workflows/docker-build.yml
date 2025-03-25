@@ -1,53 +1,8 @@
-# name: Build and Push Docker Image
-# on:
-#   push:
-#     branches:
-#       - master  # This will trigger the workflow on changes to the 'main' branch.
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       # Step 1: Checkout the code from GitHub
-#       - name: Check out repository
-#         uses: actions/checkout@v2
-
-#       # Step 2: Set up Docker Buildx (enables advanced Docker features)
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v1
-
-#       # Step 3: Cache Docker layers to speed up the builds
-#       - name: Cache Docker layers
-#         uses: actions/cache@v3
-#         with:
-#           path: /tmp/.buildx-cache
-#           key: ${{ runner.os }}-buildx-${{ github.sha }}
-#           restore-keys: |
-#             ${{ runner.os }}-buildx-
-
-#       # Step 4: Build Docker image
-#       - name: Build Docker image
-#         run: |
-#           docker build -t nafaebm/publicimages:learn-nginx-app .
-
-#       # Step 5: Log in to Docker Hub using GitHub OAuth authentication
-#       - name: Log in to Docker Hub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKER_USERNAME }}  # Add your Docker Hub username here
-#           password: ${{ secrets.DOCKER_PASSWORD }}  # Add your Docker Hub password or PAT here
-
-#       # Step 6: Push the Docker image to Docker Hub
-#       - name: Push Docker image
-#         run: |
-#           docker push nafaebm/publicimages:learn-nginx-app
-
 name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master  # This will trigger the workflow on changes to the 'master' branch.
+      - master  # This will trigger the workflow on changes to the 'main' branch.
 
 jobs:
   build:
@@ -71,43 +26,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      # Step 4: Log in to Docker Hub using GitHub OAuth authentication
+      # Step 4: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t nafaebm/publicimages:learn-nginx-app .
+
+      # Step 5: Log in to Docker Hub using GitHub OAuth authentication
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}  # Add your Docker Hub username here
           password: ${{ secrets.DOCKER_PASSWORD }}  # Add your Docker Hub password or PAT here
 
-      # Step 5: Check if Docker image exists
-      - name: Check if Docker image exists
-        id: check_image
+      # Step 6: Push the Docker image to Docker Hub
+      - name: Push Docker image
         run: |
-          if curl --silent --fail "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app"; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
-      # Step 6: Get Docker image digest if tag exists
-      - name: Get Docker image digest
-        if: env.TAG_EXISTS == 'true'
-        id: get_digest
-        run: |
-          DIGEST=$(curl --silent "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app" | jq -r '.images[0].digest')
-          echo "IMAGE_DIGEST=${DIGEST}" >> $GITHUB_ENV
-
-      # Step 7: Delete existing Docker image using the digest
-      - name: Delete existing Docker image from Docker Hub
-        if: env.TAG_EXISTS == 'true'
-        run: |
-          curl -s -X DELETE \
-          -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
-          "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/images/${IMAGE_DIGEST}"
-      # Step 8: Build Docker image
-      # - name: Build Docker image
-      #   run: |
-      #     docker build -t nafaebm/publicimages:learn-nginx-app .
-
-      # # Step 9: Push Docker image to Docker Hub
-      # - name: Push Docker image
-      #   run: |
-      #     docker push nafaebm/publicimages:learn-nginx-app
+          docker push nafaebm/publicimages:learn-nginx-app
