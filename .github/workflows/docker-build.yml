@@ -87,21 +87,27 @@ jobs:
           else
             echo "IMAGE_EXISTS=false" >> $GITHUB_ENV
           fi
+      # Step 6: Get Docker image digest if tag exists
+      - name: Get Docker image digest
+        if: env.TAG_EXISTS == 'true'
+        id: get_digest
+        run: |
+          DIGEST=$(curl --silent "https://hub.docker.com/v2/repositories/nafaebm/publicimages/tags/learn-nginx-app" | jq -r '.images[0].digest')
+          echo "IMAGE_DIGEST=${DIGEST}" >> $GITHUB_ENV
 
-      # Step 6: Delete existing Docker image if it exists
+      # Step 7: Delete existing Docker image using the digest
       - name: Delete existing Docker image from Docker Hub
-        if: env.IMAGE_EXISTS == 'true'
+        if: env.TAG_EXISTS == 'true'
         run: |
           curl -s -X DELETE \
           -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
-          "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app"
+          "https://hub.docker.com/v2/repositories/nafaebm/publicimages/manifests/${IMAGE_DIGEST}"
+      # Step 7: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t nafaebm/publicimages:learn-nginx-app .
 
-      # # Step 7: Build Docker image
-      # - name: Build Docker image
-      #   run: |
-      #     docker build -t nafaebm/publicimages:learn-nginx-app .
-
-      # # Step 8: Push Docker image to Docker Hub
-      # - name: Push Docker image
-      #   run: |
-      #     docker push nafaebm/publicimages:learn-nginx-app
+      # Step 8: Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push nafaebm/publicimages:learn-nginx-app
