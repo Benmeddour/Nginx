@@ -82,7 +82,7 @@ jobs:
       - name: Check if Docker image exists
         id: check_image
         run: |
-          if curl --silent --fail "https://index.docker.io/v2/repositories/nafaebm/publicimages/tags/learn-nginx-app"; then
+          if curl --silent --fail "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app"; then
             echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
           else
             echo "IMAGE_EXISTS=false" >> $GITHUB_ENV
