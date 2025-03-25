@@ -83,16 +83,16 @@ jobs:
         id: check_image
         run: |
           if curl --silent --fail "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app"; then
-            echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
           else
-            echo "IMAGE_EXISTS=false" >> $GITHUB_ENV
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
       # Step 6: Get Docker image digest if tag exists
       - name: Get Docker image digest
         if: env.TAG_EXISTS == 'true'
         id: get_digest
         run: |
-          DIGEST=$(curl --silent "https://hub.docker.com/v2/repositories/nafaebm/publicimages/tags/learn-nginx-app" | jq -r '.images[0].digest')
+          DIGEST=$(curl --silent "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app" | jq -r '.images[0].digest')
           echo "IMAGE_DIGEST=${DIGEST}" >> $GITHUB_ENV
 
       # Step 7: Delete existing Docker image using the digest
@@ -101,7 +101,7 @@ jobs:
         run: |
           curl -s -X DELETE \
           -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
-          "https://hub.docker.com/v2/repositories/nafaebm/publicimages/manifests/${IMAGE_DIGEST}"
+          "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/images/${IMAGE_DIGEST}"
       # Step 8: Build Docker image
       # - name: Build Docker image
       #   run: |
