@@ -89,19 +89,19 @@ jobs:
           fi
 
       # Step 6: Delete existing Docker image if it exists
-      # - name: Delete existing Docker image from Docker Hub
-      #   if: env.IMAGE_EXISTS == 'true'
+      - name: Delete existing Docker image from Docker Hub
+        if: env.IMAGE_EXISTS == 'true'
+        run: |
+          curl -s -X DELETE \
+          -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
+          "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app"
+
+      # # Step 7: Build Docker image
+      # - name: Build Docker image
       #   run: |
-      #     curl -s -X DELETE \
-      #     -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
-      #     "https://hub.docker.com/v2/namespaces/nafaebm/repositories/publicimages/tags/learn-nginx-app"
+      #     docker build -t nafaebm/publicimages:learn-nginx-app .
 
-      # Step 7: Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t nafaebm/publicimages:learn-nginx-app .
-
-      # Step 8: Push Docker image to Docker Hub
-      - name: Push Docker image
-        run: |
-          docker push nafaebm/publicimages:learn-nginx-app
+      # # Step 8: Push Docker image to Docker Hub
+      # - name: Push Docker image
+      #   run: |
+      #     docker push nafaebm/publicimages:learn-nginx-app
