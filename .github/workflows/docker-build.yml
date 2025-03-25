@@ -82,7 +82,7 @@ jobs:
       - name: Check if Docker image exists
         id: check_image
         run: |
-          if curl --silent --fail "https://index.docker.io/v1/repositories/nafaebm/publicimages/tags/learn-nginx-app"; then
+          if curl --silent --fail "https://index.docker.io/v2/repositories/nafaebm/publicimages/tags/learn-nginx-app"; then
             echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
           else
             echo "IMAGE_EXISTS=false" >> $GITHUB_ENV
@@ -95,12 +95,12 @@ jobs:
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker rmi nafaebm/publicimages:learn-nginx-app
 
-      # Step 7: Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t nafaebm/publicimages:learn-nginx-app .
+      # # Step 7: Build Docker image
+      # - name: Build Docker image
+      #   run: |
+      #     docker build -t nafaebm/publicimages:learn-nginx-app .
 
-      # Step 8: Push Docker image to Docker Hub
-      - name: Push Docker image
-        run: |
-          docker push nafaebm/publicimages:learn-nginx-app
+      # # Step 8: Push Docker image to Docker Hub
+      # - name: Push Docker image
+      #   run: |
+      #     docker push nafaebm/publicimages:learn-nginx-app
