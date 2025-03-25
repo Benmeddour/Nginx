@@ -62,3 +62,76 @@ ff
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 
+
+NGINX vs Apache: Web Server Comparison
+Introduction to Web Servers
+NGINX (pronounced "engine-x") and Apache HTTP Server are the two most popular open-source web servers powering over 60% of websites worldwide. While both serve similar fundamental purposes - delivering web content to visitors - they differ significantly in architecture and optimal use cases.
+
+NGINX Architecture
+NGINX's event-driven architecture diagram
+
+Apache Architecture
+Apache's process-based architecture diagram
+
+Core Components Compared
+NGINX Components
+NGINX Core Functions
+
+Request Processing: Handles thousands of concurrent connections efficiently
+
+Web Server: Optimized static content delivery
+
+Service Proxy: Advanced reverse proxy capabilities
+
+Application Integration: Seamless connection to app servers
+
+Apache Components
+MPM Modules: Flexible processing models (prefork, worker, event)
+
+.htaccess: Directory-level configuration
+
+Dynamic Modules: Extensible functionality
+
+CGI Support: Traditional dynamic content handling
+
+Enterprise Deployment
+Professional Services
+NGINX professional services offerings
+
+Network Topology
+Typical deployment architecture
+
+Key Differences Summary
+Aspect	NGINX	Apache
+Architecture	Event-driven, asynchronous	Process/thread-based
+Performance	Excellent for static content	Better for dynamic content
+Configuration	Centralized	Distributed (.htaccess)
+Resource Usage	Lightweight	More resource-intensive
+Use Cases	Modern web apps, microservices	Traditional web applications
+When to Use Each
+Choose NGINX when you need:
+
+High performance static content delivery
+
+Reverse proxy/load balancing
+
+Microservices architecture support
+
+Kubernetes integration
+
+Choose Apache when you need:
+
+.htaccess flexibility
+
+Shared hosting environments
+
+Legacy application support
+
+Dynamic module loading
+
+Both servers continue to evolve, with many organizations using them in complementary ways - NGINX as a reverse proxy in front of Apache application servers.
+* df nginx
+* nginx vs apache
+* creating k8s pods for app
+* config nginx for be a loud balancer to app
+https://youtu.be/q8OleYuqntY
