@@ -1,3 +1,4 @@
+# Nginx as a Reverse Proxy and Load Balancer for Node.js Applications
 ## Introduction
 When developing web applications, we typically test them on `localhost`, using Node.js’s built-in server. In this environment, everything runs smoothly because the traffic is minimal. However, when the application is deployed to production and starts receiving real user requests from the internet, problems arise—slow performance, crashes, and unresponsiveness.
 
