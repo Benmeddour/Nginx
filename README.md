@@ -15,9 +15,10 @@ Follow along to learn how to set up Nginx as a **reverse proxy and load balancer
 
 ## Prerequisites
 - [minikube installed](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
+- Basic understanding of Kubernetes and Docker
 
 ## Installation
-I have already packed this projec into a docker images from this repository you need the pods_deployment and the nginx deployment and folow the steps:
+I have already packed this project into Docker images. You will need the pods_deployment and the nginx_pod files to follow the steps:
 1. Clone the repository:
     ```sh
     git clone https://github.com/Benmeddour/Nginx.git
@@ -26,7 +27,7 @@ I have already packed this projec into a docker images from this repository you 
 
 2. create the nginx:
     ```sh
-    kubectl apply -f nginx_deployement
+    kubectl apply -f nginx_pod.yaml
     ```
 3. create 3 instances of nodeApp
    ```sh
