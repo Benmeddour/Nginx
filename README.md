@@ -14,119 +14,122 @@ In this project, we will **deploy three instances of a Node.js application and c
 Follow along to learn how to set up Nginx as a **reverse proxy and load balancer** to optimize your web application for production!
 
 ## Prerequisites
-- [minikube installed](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
+- [minikube installed](https://minikube.sigs.k8s.io/docs/start)
 - Basic understanding of Kubernetes and Docker
 
 ## Installation
-I have already packed this project into Docker images. You will need the pods_deployment and the nginx_pod files to follow the steps:
+
+This project has been containerized using Docker. To set up the environment, you will need the `nginx_pod.yaml` and `nodeApp_pods_creation.yaml` files. Follow these steps:
+
 1. Clone the repository:
     ```sh
     git clone https://github.com/Benmeddour/Nginx.git
     cd Nginx
     ```
 
-2. create the nginx:
+2. Deploy the Nginx pod:
     ```sh
     kubectl apply -f nginx_pod.yaml
     ```
-3. create 3 instances of nodeApp
-   ```sh
+
+3. Deploy three instances of the Node.js application:
+    ```sh
     kubectl apply -f nodeApp_pods_creation.yaml
     ```
 
 ## Configuration
 
-1. Configure Nginx:
-    - Open the Nginx configuration file (e.g., `/etc/nginx/nginx.conf` or `/etc/nginx/sites-available/default`).
-    - Add the following configuration:
-    ```nginx
-    server {
-        listen 80;
-        server_name yourdomain.com;
+1. Verify that all pods are running:
+    ```sh
+    kubectl get pods -o wide
+    ```
 
-        location / {
-            proxy_pass http://localhost:3000;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
+2. Note down the IP addresses of the `nodeApp` pods. These will be required for configuring the load balancer.
+
+3. If all pods are in the `Running` state, access the Nginx container:
+    ```sh
+    kubectl exec nginx-pod -it -- /bin/bash
+    ```
+
+4. Update the Nginx configuration:
+    - Install a text editor (if not already installed):
+        ```sh
+        apt update
+        apt install nano
+        ```
+    - Open the Nginx configuration file:
+        ```sh
+        nano /etc/nginx/nginx.conf
+        ```
+    - Add the following configuration under the `http` block:
+
+        ```nginx
+        upstream nodejs_cluster {
+            # Define the load balancing algorithm
+            least_conn; # Requests are sent to the server with the least active connections
+
+            # Specify the IP addresses of your Node.js application pods
+            server 192.168.1.101:3000; # Node.js instance 1
+            server 192.168.1.102:3000; # Node.js instance 2
+            server 192.168.1.103:3000; # Node.js instance 3
         }
-    }
-    ```
+        ```
 
-2. Restart Nginx:
+5. Update the default site configuration:
+    - Open the default configuration file:
+        ```sh
+        nano /etc/nginx/conf.d/default.conf
+        ```
+    - Replace the `location / {}` block with the following:
+        ```nginx
+        location / {
+            proxy_pass http://nodejs_cluster;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        ```
+
+6. Restart the Nginx service to apply the changes:
     ```sh
-    sudo systemctl restart nginx
+    nginx -s reload
     ```
 
-## Usage
+Your Nginx server is now configured to act as a reverse proxy and load balancer for the Node.js application instances.
 
-1. Start the Node.js application:
+## Test the Setup Using a Curl Pod
+
+To verify that the Nginx reverse proxy and load balancer are working as expected, you can use a `curl` pod to send requests to the Nginx pod.
+
+1. Deploy a `curl` pod:
     ```sh
-    node server.js
+    kubectl run curl-pod --image=curlimages/curl -i --tty -- /bin/sh
     ```
 
-2. Open your browser and navigate to `http://localhost:3000` to ensure the application is running.
+2. Send a request to the Nginx pod:
+    ```sh
+    curl http://<NGINX_POD_IP>:80
+    ```
 
-3. If everything is working correctly, you should see your application being served through Nginx at `http://yourdomain.com`.
+    Replace `<NGINX_POD_IP>` with the IP address of the Nginx pod. You can find this IP by running:
+    ```sh
+    kubectl get pods -o wide
+    ```
 
-## License
+3. Observe the response. You should see the output from one of the Node.js application instances. Repeat the `curl` command multiple times to verify that requests are being distributed across the instances.
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+4. Exit the `curl` pod shell:
+    ```sh
+    exit
+    ```
 
-## NGINX vs Apache: Web Server Comparison
+This confirms that the Nginx reverse proxy and load balancer are correctly routing traffic to the Node.js application instances.
+## Summary
 
-### Introduction to Web Servers
+In this project, we demonstrated how to optimize a Node.js application for production by deploying multiple instances and configuring Nginx as a reverse proxy and load balancer. Key steps included:
 
-NGINX (pronounced "engine-x") and Apache HTTP Server are the two most popular open-source web servers powering over 60% of websites worldwide. While both serve similar fundamental purposes - delivering web content to users - they have different architectures and strengths.
+- Setting up the environment using Kubernetes and Docker.
+- Deploying three Node.js application instances and an Nginx pod.
+- Configuring Nginx to distribute incoming requests efficiently using the `least_conn` load balancing algorithm.
+- Verifying the setup with a `curl` pod to ensure proper traffic distribution.
 
-### NGINX Architecture
-
-- **Event-driven architecture:** Handles thousands of concurrent connections efficiently.
-- **Optimized static content delivery.**
-- **Advanced reverse proxy capabilities.**
-- **Seamless connection to app servers.**
-
-### Apache Architecture
-
-- **Process/thread-based architecture.**
-- **Flexible processing models (prefork, worker, event).**
-- **Directory-level configuration with .htaccess.**
-- **Extensible functionality with dynamic modules.**
-- **Traditional dynamic content handling with CGI support.**
-
-### Core Components Compared
-
-| Aspect          | NGINX                            | Apache                                |
-|-----------------|----------------------------------|---------------------------------------|
-| Architecture    | Event-driven, asynchronous       | Process/thread-based                  |
-| Performance     | Excellent for static content     | Better for dynamic content            |
-| Configuration   | Centralized                      | Distributed (.htaccess)               |
-| Resource Usage  | Lightweight                      | More resource-intensive               |
-| Use Cases       | Modern web apps, microservices   | Traditional web applications          |
-
-### When to Use Each
-
-Choose **NGINX** when you need:
-- High performance static content delivery
-- Reverse proxy/load balancing
-- Microservices architecture support
-- Kubernetes integration
-
-Choose **Apache** when you need:
-- .htaccess flexibility
-- Shared hosting environments
-- Legacy application support
-- Dynamic module loading
-
-Both servers continue to evolve, with many organizations using them in complementary ways - NGINX as a reverse proxy in front of Apache application servers.
-
-## Additional Resources
-
-- [NGINX Documentation](https://nginx.org/en/docs/)
-- [Apache HTTP Server Documentation](https://httpd.apache.org/docs/)
-- [Creating Kubernetes Pods for Applications](https://kubernetes.io/docs/concepts/workloads/pods/)
-- [Configuring NGINX as a Load Balancer](https://docs.nginx.com/nginx/admin-guide/load-balancer/)
-
-For in-depth comparisons and tutorials, check out this [YouTube video](https://youtu.be/q8OleYuqntY).
+This setup improves performance, scalability, and availability, making it suitable for handling high traffic in production environments. For more information about Nginx, you can visit [my_nginx_wiki](https://github.com/Benmeddour/Nginx/wiki), which I created to simplify and explain Nginx concepts.
