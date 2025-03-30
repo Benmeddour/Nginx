@@ -1,23 +1,36 @@
-# Nginx Project
+## Introduction
+When developing web applications, we typically test them on `localhost`, using Node.js’s built-in server. In this environment, everything runs smoothly because the traffic is minimal. However, when the application is deployed to production and starts receiving real user requests from the internet, problems arise—slow performance, crashes, and unresponsiveness.
 
-This project is a Node.js application configured to work with Nginx as a reverse proxy.
+The reason behind this is that a **Node.js server alone is not optimized to handle high traffic efficiently**. While Node.js is great for handling asynchronous requests, it still has limitations when dealing with a large number of concurrent users. Using `localhost` or running a standalone Node.js server in production means:
+
+* **No Load Balancing**: All traffic goes to a single instance, which can get overwhelmed.
+* **Lack of Reverse Proxy Features**: Direct client requests expose the backend, increasing security risks.
+* **Inefficient Resource Management**: A single server may not scale well under heavy load.
+
+To address these issues, we use a web server like **Nginx**, which acts as a reverse proxy and load balancer. Instead of letting users interact directly with the Node.js server, Nginx sits in front, handling incoming requests and distributing them efficiently across multiple instances of the application.
+
+In this project, we will **deploy three instances of a Node.js application and configure Nginx to manage all incoming requests**. This will ensure better performance, improved scalability, and higher availability.
+
+Follow along to learn how to set up Nginx as a **reverse proxy and load balancer** to optimize your web application for production!
 
 ## Prerequisites
-
-- Node.js (v14 or higher)
-- Nginx
+- [minikube installed](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
 
 ## Installation
-
+I have already packed this projec into a docker images from this repository you need the pods_deployment and the nginx deployment and folow the steps:
 1. Clone the repository:
     ```sh
     git clone https://github.com/Benmeddour/Nginx.git
     cd Nginx
     ```
 
-2. Install dependencies:
+2. create the nginx:
     ```sh
-    npm install
+    kubectl apply -f nginx_deployement
+    ```
+3. create 3 instances of nodeApp
+   ```sh
+    kubectl apply -f nodeApp_pods_creation.yaml
     ```
 
 ## Configuration
