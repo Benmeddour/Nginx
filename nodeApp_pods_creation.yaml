@@ -19,4 +19,4 @@ spec:
       - name: learn-nginx-app
         image: nafaebm/publicimages:learn-nginx-app
         ports:
-        - containerPort: 80
+        - containerPort: 3000
